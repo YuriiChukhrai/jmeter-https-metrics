@@ -28,10 +28,6 @@ import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-/**
- * @author limit (Yurii Chukhrai)
- */
-
 public class HttpsMetricsSenderTest extends BaseTest {
 
     @DataProvider(parallel = true)

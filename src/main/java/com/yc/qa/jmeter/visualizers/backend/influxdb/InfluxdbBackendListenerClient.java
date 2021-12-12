@@ -85,6 +85,7 @@ public class InfluxdbBackendListenerClient extends AbstractBackendListenerClient
     private static final String METRIC_MEAN_ACTIVE_THREADS = "meanAT=";
     private static final String METRIC_STARTED_THREADS = "startedT=";
     private static final String METRIC_ENDED_THREADS = "endedT=";
+    private static final char METRIC_DELIMITER = ',';
 
     private static final String TAG_OK = "ok";
     private static final String TAG_KO = "ko";
@@ -160,10 +161,10 @@ public class InfluxdbBackendListenerClient extends AbstractBackendListenerClient
         tag.append(TAG_TRANSACTION).append("internal");
         tag.append(userTag);
         StringBuilder field = new StringBuilder(80);
-        field.append(METRIC_MIN_ACTIVE_THREADS).append(userMetrics.getMinActiveThreads()).append(',');
-        field.append(METRIC_MAX_ACTIVE_THREADS).append(userMetrics.getMaxActiveThreads()).append(',');
-        field.append(METRIC_MEAN_ACTIVE_THREADS).append(userMetrics.getMeanActiveThreads()).append(',');
-        field.append(METRIC_STARTED_THREADS).append(userMetrics.getStartedThreads()).append(',');
+        field.append(METRIC_MIN_ACTIVE_THREADS).append(userMetrics.getMinActiveThreads()).append(METRIC_DELIMITER);
+        field.append(METRIC_MAX_ACTIVE_THREADS).append(userMetrics.getMaxActiveThreads()).append(METRIC_DELIMITER);
+        field.append(METRIC_MEAN_ACTIVE_THREADS).append(userMetrics.getMeanActiveThreads()).append(METRIC_DELIMITER);
+        field.append(METRIC_STARTED_THREADS).append(userMetrics.getStartedThreads()).append(METRIC_DELIMITER);
         field.append(METRIC_ENDED_THREADS).append(userMetrics.getFinishedThreads());
 
         influxdbMetricsManager.addMetric(measurement, tag.toString(), field.toString());
@@ -224,22 +225,22 @@ public class InfluxdbBackendListenerClient extends AbstractBackendListenerClient
             StringBuilder field = new StringBuilder(80);
             field.append(METRIC_COUNT).append(count);
             if (!Double.isNaN(mean)) {
-                field.append(',').append(METRIC_AVG).append(mean);
+                field.append(METRIC_DELIMITER).append(METRIC_AVG).append(mean);
             }
             if (!Double.isNaN(minTime)) {
-                field.append(',').append(METRIC_MIN).append(minTime);
+                field.append(METRIC_DELIMITER).append(METRIC_MIN).append(minTime);
             }
             if (!Double.isNaN(maxTime)) {
-                field.append(',').append(METRIC_MAX).append(maxTime);
+                field.append(METRIC_DELIMITER).append(METRIC_MAX).append(maxTime);
             }
             if(sentBytes != null) {
-                field.append(',').append(METRIC_SENT_BYTES).append(sentBytes);
+                field.append(METRIC_DELIMITER).append(METRIC_SENT_BYTES).append(sentBytes);
             }
             if(receivedBytes != null) {
-                field.append(',').append(METRIC_RECEIVED_BYTES).append(receivedBytes);
+                field.append(METRIC_DELIMITER).append(METRIC_RECEIVED_BYTES).append(receivedBytes);
             }
             for (Float pct : pcts) {
-                field.append(',').append(METRIC_PCT_PREFIX).append(pct).append('=').append(
+                field.append(METRIC_DELIMITER).append(METRIC_PCT_PREFIX).append(pct).append('=').append(
                         percentileProvider.getPercentileValue(pct));
             }
             influxdbMetricsManager.addMetric(measurement, tag.toString(), field.toString());
@@ -258,23 +259,23 @@ public class InfluxdbBackendListenerClient extends AbstractBackendListenerClient
             tag.append(userTag);
 
             field.append(METRIC_COUNT).append(total);
-            field.append(',').append(METRIC_COUNT_ERROR).append(metric.getFailures());
+            field.append(METRIC_DELIMITER).append(METRIC_COUNT_ERROR).append(metric.getFailures());
 
             if (!Double.isNaN(metric.getOkMean())) {
-                field.append(',').append(METRIC_AVG).append(Double.toString(metric.getOkMean()));
+                field.append(METRIC_DELIMITER).append(METRIC_AVG).append(Double.toString(metric.getOkMean()));
             }
             if (!Double.isNaN(metric.getOkMinTime())) {
-                field.append(',').append(METRIC_MIN).append(Double.toString(metric.getOkMinTime()));
+                field.append(METRIC_DELIMITER).append(METRIC_MIN).append(Double.toString(metric.getOkMinTime()));
             }
             if (!Double.isNaN(metric.getOkMaxTime())) {
-                field.append(',').append(METRIC_MAX).append(Double.toString(metric.getOkMaxTime()));
+                field.append(METRIC_DELIMITER).append(METRIC_MAX).append(Double.toString(metric.getOkMaxTime()));
             }
 
-            field.append(',').append(METRIC_HIT).append(metric.getHits());
-            field.append(',').append(METRIC_SENT_BYTES).append(metric.getSentBytes());
-            field.append(',').append(METRIC_RECEIVED_BYTES).append(metric.getReceivedBytes());
+            field.append(METRIC_DELIMITER).append(METRIC_HIT).append(metric.getHits());
+            field.append(METRIC_DELIMITER).append(METRIC_SENT_BYTES).append(metric.getSentBytes());
+            field.append(METRIC_DELIMITER).append(METRIC_RECEIVED_BYTES).append(metric.getReceivedBytes());
             for (Float pct : pcts) {
-                field.append(',').append(METRIC_PCT_PREFIX).append(pct).append('=').append(Double.toString(metric.getAllPercentile(pct)));
+                field.append(METRIC_DELIMITER).append(METRIC_PCT_PREFIX).append(pct).append('=').append(Double.toString(metric.getAllPercentile(pct)));
             }
             influxdbMetricsManager.addMetric(measurement, tag.toString(), field.toString());
         }
@@ -353,7 +354,7 @@ public class InfluxdbBackendListenerClient extends AbstractBackendListenerClient
                     && StringUtils.isNotBlank(context.getParameter(name))) {
                 final String tagName = name.trim().substring(4);
                 final String tagValue = context.getParameter(name).trim();
-                userTagBuilder.append(',')
+                userTagBuilder.append(METRIC_DELIMITER)
                         .append(AbstractInfluxdbMetricsSender
                                 .tagToStringValue(tagName))
                         .append('=')

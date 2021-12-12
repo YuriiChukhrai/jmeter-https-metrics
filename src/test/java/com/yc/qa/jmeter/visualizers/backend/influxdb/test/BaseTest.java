@@ -14,11 +14,6 @@ import java.net.HttpURLConnection;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Function;
 
-/**
- *
- * @author limit (Yurii Chukhrai)
- */
-
 public class BaseTest {
 
     protected Function<Boolean, WireMockConfiguration> wireMockConfiguration = (isHttps) -> isHttps ? WireMockConfiguration.wireMockConfig().dynamicPort().dynamicHttpsPort() : WireMockConfiguration.wireMockConfig().dynamicPort();
