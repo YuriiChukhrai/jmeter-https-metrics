@@ -1,5 +1,7 @@
 # jmeter-https-metrics
 
+## Article
+[Implementation of custom HTTPS sender for JMeter and InfluxDB](./doc/implementation_of_custom_https_metric_sender.md)
 
 ## Dependencies
 Make sure you have installed on your operating system:<br/>
